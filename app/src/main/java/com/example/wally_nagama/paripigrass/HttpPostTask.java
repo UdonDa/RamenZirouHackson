@@ -1,5 +1,6 @@
 package com.example.wally_nagama.paripigrass;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -21,13 +22,16 @@ import java.net.URL;
  */
 
 public class HttpPostTask extends AsyncTask<URL, Void, Void> {
-    final String json = "{\"events\":{\"name\":\"田中\",\"score\":3000}}";
-            /*
-            "{\"events\":{" +
-                    "\"name\":\"name1\"," +
-                    "\"score\":5000" +
-                    "}}";
-*/
+    Context context;
+    static public String name_get;
+    //static public int score_get;
+
+
+    final String json = "{\"events\":{\"name\":\"" + name_get + "\",\"score\": "+ MainActivity.score +"}}";
+
+    JSONObject jsonObject;
+    //コンストラクタ
+    HttpPostTask(){}
 
 
     @Override
@@ -44,6 +48,7 @@ public class HttpPostTask extends AsyncTask<URL, Void, Void> {
             con.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             OutputStream os = con.getOutputStream();
             PrintStream ps = new PrintStream(os);
+            //書き込み
             ps.print(json);
             ps.close();
 
@@ -51,11 +56,24 @@ public class HttpPostTask extends AsyncTask<URL, Void, Void> {
                     new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
             buffer = reader.readLine();
 
-            JSONArray jsonArray = new JSONArray(buffer);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
+            JSONObject item = new JSONObject(buffer);
+            /*for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = jsonArray.getJSONObject(i);
                 Log.d("HTTP REQ", jsonObject.getString("name"));
-            }
+            }*/
+
+            MainActivity.st = item.getString("events");
+
+            MainActivity.name = item.getJSONObject("events").getString("name");
+            MainActivity.ranking = item.getJSONObject("events").getString("ranking");
+            MainActivity.score_return = item.getJSONObject("events").getString("score");
+
+
+            Log.d("帰って着たの",MainActivity.st);
+
+
+
+            //終了
             con.disconnect();
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -69,43 +87,3 @@ public class HttpPostTask extends AsyncTask<URL, Void, Void> {
         return null;
     }
 }
-
-
-
-/*      try {
-            con = (HttpURLConnection) url.openConnection();
-            con.setDoOutput(true);
-            con.setChunkedStreamingMode(0);
-            con.connect();
-
-            // POSTデータ送信処理
-            OutputStream out = null;
-            try {
-                out = con.getOutputStream();
-                //送る
-                out.write("POST DATA".getBytes("UTF-8"));
-                out.flush();
-            } catch (IOException e) {
-                // POST送信エラー
-                e.printStackTrace();
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-            }
-
-            final int status = con.getResponseCode();
-            if (status == HttpURLConnection.HTTP_OK) {
-                // 正常
-                // レスポンス取得処理を実行
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (con != null) {
-                con.disconnect();
-            }
-        }
-*/
-
-//        return null;

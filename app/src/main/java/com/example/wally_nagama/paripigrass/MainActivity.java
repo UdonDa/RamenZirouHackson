@@ -54,11 +54,9 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
     ReConnectBluetooth reConnectBt;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
-    Button roomCreateButton, btListButton, twitterButton, tweetButton, mHttpPost;
+    Button roomCreateButton, btListButton, twitterButton, tweetButton, mHttpPost,mTestToast;
     EditText editText, userName, roomNumber, mDirection;
     Context act = this;
-    ChildEventListener childEventListener;
-    String key;
     TextView test_tv, btdevicename;
     int removedUserId = 0;
     BluetoothAdapter btAdapter;
@@ -67,6 +65,11 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
     ArrayList<String> itemArray = new ArrayList<String>();
     final List<Integer> checkedItems = new ArrayList<>();  //選択されたアイテム
     SharedPreferences preferences;
+    static public String st;
+    static public String score;
+    static public String name;
+    static public String ranking;
+    static public String score_return;
 
     /* twitter */
     private String mCallbackURL;
@@ -134,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
     public Context context;
     private String result_voce;
 
+    public int msgInt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
         tweetButton = (Button) findViewById(R.id.tweet);
         userName = (EditText) findViewById(R.id.userName);
         mDirection = (EditText) findViewById(R.id.amin_write_direction);
-        roomNumber = (EditText) findViewById(R.id.roomNumber);
         btdevicename = (TextView) findViewById(R.id.btdevicename);
 
         user = new User();
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
         //HttpPost
         httpPostTask = new HttpPostTask();
         mHttpPost = (Button)findViewById(R.id.amin_post);
+        mTestToast = (Button)findViewById(R.id.amin_toast);
 
         //BlueTooth再接続
         reConnectBt = new ReConnectBluetooth();
@@ -173,6 +177,20 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
         //音声認識
         txvAction = (TextView) findViewById(R.id.amin_txvAction);
         txvRec = (TextView) findViewById(R.id.txv_recog);
+
+
+        //テストトースト
+        mTestToast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(this,st,Toast.LENGTH_SHORT).show();
+                Toast toast = Toast.makeText(MainActivity.this, name, Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
+
+
+
 
         /*---     音声認識リスナー   ----*/
         findViewById(R.id.amin_recog).setOnClickListener(new View.OnClickListener() {
@@ -270,142 +288,13 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
         });
 
 
-        //roomを作成する
+        //名前を設定する
         roomCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (user.joined == false) {
-                    String roomId = roomNumber.getText().toString();
-                    Room room = new Room(roomId);
-                    myRef = database.getReference("room" + roomId);
+                String text = userName.getText().toString();
+                httpPostTask.name_get = text;
 
-                    //ユーザーのリストなどを見張る
-                    childEventListener = new ChildEventListener() {
-                        int count = 0;
-
-                        @Override
-                        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                            count++;
-//                            新規ユーザ追加時
-                            if (dataSnapshot.child("userId").getValue() != null && !dataSnapshot.getKey().equals(user.userKey)) {
-                                if (user.nextUserId == 1 && count > user.userId) {
-                                    user.nextUserId = user.userId + 1;
-                                    Log.d("nextUserID", "at 151:: " + user.nextUserId);
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {}
-
-                        @Override
-                        public void onChildRemoved(DataSnapshot dataSnapshot) {
-                            //userが部屋からいなくなったときの処理
-                            if (dataSnapshot.child("userId").getValue() != null) {
-                                removedUserId = dataSnapshot.child("userId").getValue(int.class);
-                                myRef.child(user.userKey).child("userId").runTransaction(new Transaction.Handler() {
-                                    @Override
-                                    public Transaction.Result doTransaction(MutableData mutableData) {
-                                        if (mutableData.getValue(int.class) > removedUserId) {
-                                            //自分よりも先に部屋に入った人が抜けたらuserId nextUserIdをデクリメント
-                                            user.userId--;
-                                            if (user.nextUserId > 1) {
-                                                user.nextUserId--;
-                                            } else {
-
-                                            }
-                                            Log.d("nextUserID", "at 181:: " + user.nextUserId);
-                                            mutableData.setValue(user.userId);
-                                        } else if (removedUserId == mutableData.getValue(int.class) + 1) {
-//                                                自分の次が削除のとき
-//                                                そいつがケツやったらnextUserIDを1にする
-                                            myRef.child("numberOfUser").runTransaction(new Transaction.Handler() {
-                                                @Override
-                                                public Transaction.Result doTransaction(MutableData mutableData) {
-                                                    if (user.userId == mutableData.getValue(int.class)) {
-                                                        user.nextUserId = 1;
-                                                        Log.d("nextUserID", "at 190:: " + user.nextUserId);
-                                                    }
-                                                    return null;
-                                                }
-
-                                                @Override
-                                                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-                                                    if (b) {
-                                                        String logMessage = dataSnapshot.getValue().toString();
-                                                        Log.d("testRunTran1", "counter: " + logMessage);
-                                                    } else {
-                                                        Log.d("testRunTran1", databaseError.getMessage(), databaseError.toException());
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        return Transaction.success(mutableData);
-                                    }
-
-                                    @Override
-                                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                        if (b) {
-                                        } else {
-                                            Log.d("testRunTran", databaseError.getMessage(), databaseError.toException());
-                                        }
-                                    }
-                                });
-                            }
-                            if (dataSnapshot.getKey().equals("Roulette")){
-//                              LED ON
-                                sendBtCommand(color2string((user.now_color+1)%8+1));
-                            }
-                        }
-
-                        @Override
-                        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.w("a", "postComments:onCancelled", databaseError.toException());
-                            Toast.makeText(act, "Failed to load comments.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    };
-                    user.joined = true;
-                    key = myRef.push().getKey();
-                    user.userKey = key;
-                    registUserID(myRef, user);
-                    user.userName = userName.getText().toString();
-                    myRef.addChildEventListener(childEventListener);
-                    //roulette = new Roulette(user,myRef, mmOutputStream, mHandler);
-                    roomCreateButton.setText("部屋を退出する");
-
-                } else  {
-                    //すでに部屋に入っているときの処理
-                    //退出する
-                    //部屋の人数 numberOfUserをデクリメントして，自分自身のremoveする．
-                    myRef.child("numberOfUser").runTransaction(new Transaction.Handler() {
-                        @Override
-                        public Transaction.Result doTransaction(MutableData mutableData) {
-                            int temp = mutableData.getValue(int.class) - 1;
-                            if (temp == 0) {
-                                myRef.removeValue();
-                                return null;
-                            }
-                            mutableData.setValue(temp);
-
-                            return Transaction.success(mutableData);
-                        }
-
-                        @Override
-                        public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                        }
-                    });
-                    myRef.child(user.userKey).removeValue();
-
-                    myRef.removeEventListener(childEventListener);
-                    roomCreateButton.setText("JOIN ROOM");
-                    user.joined = false;
-                }
             }
         });
 
@@ -493,7 +382,12 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
             if (action == VIEW_INPUT) {
                 //匂いデータ受け取り
                 //ウェーイ
-                mInputTextView.setText(" " + msgStr);
+                mInputTextView.setText(msgStr);
+                //msgStrをint型に変換
+                //msgInt = Integer.parseInt(msgStr);
+
+                //httpPostTask.score_get = msgInt;
+                score = msgStr;
                 //シリアル通信で文字列を受信するとここにとんでくるぽい
                 Log.d("get str", "aa");
                 /*
@@ -562,34 +456,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
                 }
             }
         }
-    }
-
-    private void registUserID(final DatabaseReference databaseReference, final User user) {
-        //部屋に入る時，部屋の人数に合わせてuserIdを決める
-        databaseReference.child("numberOfUser").runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                if (mutableData.getValue() == null) {
-                    mutableData.setValue(1);
-                    user.userId = 1;
-                    user.now_color = user.userId;
-                } else {
-                    int id = mutableData.getValue(int.class) + 1;
-                    mutableData.setValue(id);
-                    user.userId = id;
-                    user.now_color = user.userId;
-                }
-                databaseReference.child(user.userKey).child("userId").setValue(user.userId);
-                myRef.child(key).child("userName").setValue(user.userName);
-                user.nextUserId = 1;
-                Log.d("nextUserID", "at 297:: " + user.nextUserId);
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-            }
-        });
     }
 
     //bluetoothの接続

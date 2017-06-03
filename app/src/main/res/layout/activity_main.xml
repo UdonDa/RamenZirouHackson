@@ -22,13 +22,6 @@
             android:layout_height="match_parent">
 
         <EditText
-            android:id="@+id/roomNumber"
-            android:layout_width="400px"
-            android:layout_height="wrap_content"
-            android:hint="roomNumber"
-            android:digits="1234567890" />
-
-        <EditText
             android:id="@+id/userName"
             android:layout_width="400px"
             android:layout_height="wrap_content"
@@ -39,7 +32,7 @@
 
         <Button
             android:id="@+id/userCreate"
-            android:text="join room"
+            android:text="名前登録"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -135,6 +128,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="南条サーバーにPost"/>
+
+        <Button
+            android:id="@+id/amin_toast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="トースト"/>
         </LinearLayout>
 
     </ScrollView>
