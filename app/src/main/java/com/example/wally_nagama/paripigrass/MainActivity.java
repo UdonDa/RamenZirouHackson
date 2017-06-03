@@ -35,6 +35,8 @@ import com.google.firebase.database.Transaction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -48,10 +50,11 @@ import twitter4j.auth.RequestToken;
 
 public class MainActivity extends AppCompatActivity implements Runnable, View.OnClickListener {
     User user;//aa
+    HttpPostTask httpPostTask;
     ReConnectBluetooth reConnectBt;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
-    Button roomCreateButton, btListButton, twitterButton, tweetButton;
+    Button roomCreateButton, btListButton, twitterButton, tweetButton, mHttpPost;
     EditText editText, userName, roomNumber, mDirection;
     Context act = this;
     ChildEventListener childEventListener;
@@ -146,6 +149,11 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
         btdevicename = (TextView) findViewById(R.id.btdevicename);
 
         user = new User();
+
+        //HttpPost
+        httpPostTask = new HttpPostTask();
+        mHttpPost = (Button)findViewById(R.id.amin_post);
+
         //BlueTooth再接続
         reConnectBt = new ReConnectBluetooth();
         devices1 = new ArrayList<>();
@@ -397,6 +405,18 @@ public class MainActivity extends AppCompatActivity implements Runnable, View.On
                     myRef.removeEventListener(childEventListener);
                     roomCreateButton.setText("JOIN ROOM");
                     user.joined = false;
+                }
+            }
+        });
+
+        //HttpPostボタン
+        mHttpPost.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                try {
+                    new HttpPostTask().execute(new URL("http://invita.tech:26000/callback"));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
             }
         });

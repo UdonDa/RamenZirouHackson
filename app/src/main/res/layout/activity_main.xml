@@ -129,6 +129,12 @@
                 android:text="tweet!"/>
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/amin_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="南条サーバーにPost"/>
         </LinearLayout>
 
     </ScrollView>
