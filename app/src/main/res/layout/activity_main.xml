@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.wally_nagama.paripigrass.MainActivity">
+
+    <ScrollView android:id="@+id/ScrollView01"
+        android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="0dp">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/roomNumber"
+            android:layout_width="400px"
+            android:layout_height="wrap_content"
+            android:hint="roomNumber"
+            android:digits="1234567890" />
+
+        <EditText
+            android:id="@+id/userName"
+            android:layout_width="400px"
+            android:layout_height="wrap_content"
+            android:hint="username" />
+        </LinearLayout>
+
+
+
+        <Button
+            android:id="@+id/userCreate"
+            android:text="join room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <Button
+            android:id="@+id/btdevice"
+            android:text="接続する機器を選ぶ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/btdevicename"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="接続する機器"/>
+        </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/bt_text"
+                tools:layout_editor_absoluteY="8dp"
+                tools:layout_editor_absoluteX="0dp" />
+
+
+            <Button android:id="@+id/connectButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connect" />
+
+            <TextView
+                android:id="@+id/statusValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/inputValue"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/amin_write_direction"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:hint="送りたい文字を書いてね" />
+
+            <Button android:id="@+id/writeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Write" />
+
+            <TextView
+                android:id="@+id/txv_recog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            <Button
+                android:id="@+id/amin_recog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="音声認識"/>
+
+            <TextView
+                android:id="@+id/amin_txvAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/twitter"
+                android:text="twitter連携"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tweet"
+                android:text="tweet!"/>
+
+        </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
